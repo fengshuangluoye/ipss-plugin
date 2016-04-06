@@ -13,6 +13,7 @@ import org.ieee.odm.schema.ConverterXmlType;
 import org.ieee.odm.schema.DCLineData2TXmlType;
 import org.ieee.odm.schema.DcLineControlModeEnumType;
 import org.ieee.odm.schema.DcLineMeteredEndEnumType;
+import org.ieee.odm.schema.DcLineOperationModeEnumType;
 import org.ieee.odm.schema.VSCACControlModeEnumType;
 import org.ieee.odm.schema.VSCConverterXmlType;
 import org.ieee.odm.schema.VSCDCControlModeEnumType;
@@ -29,6 +30,7 @@ import com.interpss.core.aclf.hvdc.DCControlMode;
 import com.interpss.core.aclf.hvdc.HvdcControlMode;
 import com.interpss.core.aclf.hvdc.HvdcLine2TCCC;
 import com.interpss.core.aclf.hvdc.HvdcLine2TVSC;
+import com.interpss.core.aclf.hvdc.HvdcOperationMode;
 import com.interpss.core.aclf.hvdc.Inverter;
 import com.interpss.core.aclf.hvdc.Rectifier;
 import com.interpss.core.aclf.hvdc.VSCConverter;
@@ -73,16 +75,22 @@ public class AclfHvdcDataHelper {
 		//TODO No "blocked" enum type
 		this.hvdc2T.setControlMode(mode==DcLineControlModeEnumType.POWER? HvdcControlMode.POWER: 
 			mode==DcLineControlModeEnumType.CURRENT?HvdcControlMode.CURRENT:HvdcControlMode.BLOCKED);
-		
+		this.hvdc2T.setOperationMode(hvdc2TXml.getOperationMode()==DcLineOperationModeEnumType.DOUBLE?HvdcOperationMode.DOUBLE:
+			HvdcOperationMode.SINGLE);
 		//RDC
 		//TODO 
 		//this.hvdc2T.setLineR()
-		
+		this.hvdc2T.setStatus(hvdc2TXml.isOffLine()?false:true);
 		//SETVL
 		if(this.hvdc2T.getControlMode()==HvdcControlMode.CURRENT){
 		//	this.hvdc2T.setCurrentDemand(hvdc2TXml.getCurrentDemand().getValue());
-		}else if(this.hvdc2T.getControlMode()==HvdcControlMode.POWER)
+		}else if(this.hvdc2T.getControlMode()==HvdcControlMode.POWER){
 			this.hvdc2T.setPowerDemand(hvdc2TXml.getPowerDemand().getValue(), toActivePowerUnit.apply(hvdc2TXml.getPowerDemand().getUnit()));
+			if(hvdc2TXml.getOperationMode()==DcLineOperationModeEnumType.DOUBLE){
+				this.hvdc2T.setPowerDemand2(hvdc2TXml.getPowerDemand2().getValue(), toActivePowerUnit.apply(hvdc2TXml.getPowerDemand().getUnit()));
+			}
+		}
+		
 		else //HVDC Line is Blocked
 			this.hvdc2T.setStatus(false);
 		
@@ -101,8 +109,8 @@ public class AclfHvdcDataHelper {
 		end dc voltage VDCR, set RCOMP to the dc line resistance, RDC; otherwise, set 
 		RCOMP to the appropriate fraction of RDC.
 		*/
-		this.hvdc2T.setCompondR(hvdc2TXml.getCompoundingR().getR(),toZUnit.apply(hvdc2TXml.getCompoundingR().getUnit()));
-		
+		//this.hvdc2T.setCompondR(hvdc2TXml.getCompoundingR().getR(),toZUnit.apply(hvdc2TXml.getCompoundingR().getUnit()));
+		this.hvdc2T.setLineR(hvdc2TXml.getLineR().getR());
 		
 		
 		//DELTI  DC power or current margin when ALPHA is at minimum and inverter is controlling line current
@@ -118,8 +126,17 @@ public class AclfHvdcDataHelper {
 		//this.hvdc2T.setMinCompVdc()
 		
 		//set Rectifier data
-		if(hvdc2TXml.getRectifier()!=null)
-		    setRectifierData(hvdc2TXml.getRectifier());
+		if (hvdc2TXml.getRectifier() != null) {
+			Rectifier rectifier = HvdcLineFactoryImpl.init().createRectifier();
+			this.hvdc2T.setRectifier(rectifier);
+			setRectifierData(rectifier, hvdc2TXml.getRectifier(), 1);
+			// double
+			if (hvdc2TXml.getOperationMode() == DcLineOperationModeEnumType.DOUBLE) {
+				Rectifier rectifier2 = HvdcLineFactoryImpl.init().createRectifier();
+				this.hvdc2T.setRectifier2(rectifier2);
+				setRectifierData(rectifier2, hvdc2TXml.getRectifier(), 2);
+			}
+		}
 		else{ 
 			ODMLogger.getLogger().severe("Rectifier data is Null, or not defined in ODM/XML!");
 			return false;
@@ -127,8 +144,18 @@ public class AclfHvdcDataHelper {
 			
 		//set Inverter data
 		
-		if(hvdc2TXml.getInverter()!=null)
-		    setInverterData(hvdc2TXml.getRectifier());
+		if (hvdc2TXml.getInverter() != null) {
+			Inverter inverter = HvdcLineFactoryImpl.init().createInverter();
+			this.hvdc2T.setInverter(inverter);
+			setInverterData(inverter, hvdc2TXml.getInverter(), 1);
+			// double
+			if (hvdc2TXml.getOperationMode() == DcLineOperationModeEnumType.DOUBLE) {
+				Inverter inverter2 = HvdcLineFactoryImpl.init().createInverter();
+				this.hvdc2T.setInverter2(inverter2);
+				setInverterData(inverter2, hvdc2TXml.getInverter(), 2);
+			}
+		}
+		
 		else{
 			ODMLogger.getLogger().severe("Inverter data is Null, or not defined in ODM/XML!");
 			return false;
@@ -172,15 +199,8 @@ public class AclfHvdcDataHelper {
 	}
 	
 	
-	private void setRectifierData(ConverterXmlType rectifierXml){
+	private void setRectifierData(Rectifier rectifier,ConverterXmlType rectifierXml,int n){
 		
-		Rectifier rectifier = null;
-		if(this.hvdc2T.getRectifier()==null){
-		   rectifier = HvdcLineFactoryImpl.init().createRectifier();
-		   this.hvdc2T.setRectifier(rectifier);
-		}
-		
-		rectifier = this.hvdc2T.getRectifier();
 		
 		//TODO interface bus id
 		//rectifier.setRefBusId(BusXmlRef2BusId.fx(rectifierXml.getBusId()));
@@ -202,20 +222,20 @@ public class AclfHvdcDataHelper {
 		rectifier.setXformerRatio(rectifierXml.getXformerTurnRatio());
 		
 		//TAPR tap setting 
-		rectifier.setXformerTapSetting(rectifierXml.getXformerTapSetting().getValue());
+		//rectifier.setXformerTapSetting(rectifierXml.getXformerTapSetting().getValue());
 		
 		// TAP Setting limit
 		rectifier.setXformerTapLimit(new LimitType(rectifierXml.getXformerTapLimit().getMax(),
 				                           rectifierXml.getXformerTapLimit().getMin()));
 		
 		//STPR tap step; must be positive. STPR = 0.00625 by default.
-		rectifier.setXformerTapStepSize(rectifierXml.getXformerTapStepSize());
+		//rectifier.setXformerTapStepSize(rectifierXml.getXformerTapStepSize());
 		
 		//IFR, ITR,IDR for specifying a two winding transformer to control a converter to keep 
 		//ALPHA/GARMER within limit
 		
 		// IFR = ITR=0, IDR =1.0 by default
-		if(rectifierXml.getRefXfrFromBusId()!=null && rectifierXml.getRefXfrToBusId()!=null)
+		//if(rectifierXml.getRefXfrFromBusId()!=null && rectifierXml.getRefXfrToBusId()!=null)
 		//BusIDRefXmlType fbRef=((BusIDRefXmlType)rectifierXml.getRefXfrFromBusId());
 		
 		//TODO to add the following methods
@@ -225,18 +245,16 @@ public class AclfHvdcDataHelper {
 		
 		//XCAPR , =0 by default
 		rectifier.setCommutingCapacitor(rectifierXml.getCommutatingCapacitor());
-		
+		if(n==1){
+		    rectifier.setFiringAng(rectifierXml.getFiringAngle().getValue());
+		}else if(n==2){
+			rectifier.setFiringAng(rectifierXml.getFiringAngle2().getValue());
+		}
+			
 	}
 	
-    private void setInverterData(ConverterXmlType inverterXml){
-		
-    	Inverter inverter = null;
-    	if(this.hvdc2T.getInverter()==null){
-    		inverter = HvdcLineFactoryImpl.init().createInverter();
- 		   this.hvdc2T.setInverter(inverter);
- 		}
-    	
-    	inverter = this.hvdc2T.getInverter();
+    private void setInverterData(Inverter inverter,ConverterXmlType inverterXml,int n){
+	
     	
     	//Num of bridges
 		inverter.setNBridges(inverterXml.getNumberofBridges());
@@ -258,8 +276,7 @@ public class AclfHvdcDataHelper {
 		inverter.setXformerRatio(inverterXml.getXformerTurnRatio());
 
 		// TAPR tap setting
-		inverter.setXformerTapSetting(inverterXml.getXformerTapSetting()
-				.getValue());
+		//inverter.setXformerTapSetting(inverterXml.getXformerTapSetting().getValue());
 
 		// TAP Setting limit
 		inverter.setXformerTapLimit(new LimitType(inverterXml
@@ -267,7 +284,7 @@ public class AclfHvdcDataHelper {
 				.getXformerTapLimit().getMin()));
 
 		// STPR tap step; must be positive. STPR = 0.00625 by default.
-		inverter.setXformerTapStepSize(inverterXml.getXformerTapStepSize());
+		//inverter.setXformerTapStepSize(inverterXml.getXformerTapStepSize());
 
 		// IFR, ITR,IDR for specifying a two winding transformer to control a
 		// converter to keep
@@ -284,7 +301,11 @@ public class AclfHvdcDataHelper {
 
 		// XCAPR , =0 by default
 		inverter.setCommutingCapacitor(inverterXml.getCommutatingCapacitor());
-    	
+		if(n==1){
+		    inverter.setFiringAng(inverterXml.getFiringAngle().getValue());
+		}else if(n==2){
+			inverter.setFiringAng(inverterXml.getFiringAngle2().getValue());
+		}
 	}
     
 
