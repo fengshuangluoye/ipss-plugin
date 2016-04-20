@@ -3,17 +3,16 @@ package org.interpss.mapper.odm.impl.aclf;
 import static org.interpss.mapper.odm.ODMUnitHelper.toActivePowerUnit;
 import static org.interpss.mapper.odm.ODMUnitHelper.toAngleUnit;
 import static org.interpss.mapper.odm.ODMUnitHelper.toVoltageUnit;
-import static org.interpss.mapper.odm.ODMUnitHelper.toZUnit;
 
 import org.apache.commons.math3.complex.Complex;
 import org.ieee.odm.common.ODMLogger;
 import org.ieee.odm.schema.BusIDRefXmlType;
 import org.ieee.odm.schema.BusXmlType;
-import org.ieee.odm.schema.ConverterXmlType;
 import org.ieee.odm.schema.DCLineData2TXmlType;
 import org.ieee.odm.schema.DcLineControlModeEnumType;
 import org.ieee.odm.schema.DcLineMeteredEndEnumType;
 import org.ieee.odm.schema.DcLineOperationModeEnumType;
+import org.ieee.odm.schema.ThyristorConverterXmlType;
 import org.ieee.odm.schema.VSCACControlModeEnumType;
 import org.ieee.odm.schema.VSCConverterXmlType;
 import org.ieee.odm.schema.VSCDCControlModeEnumType;
@@ -21,7 +20,6 @@ import org.ieee.odm.schema.VSCHVDC2TXmlType;
 import org.interpss.numeric.datatype.LimitType;
 
 import com.interpss.common.util.IpssLogger;
-import com.interpss.core.aclf.AclfNetwork;
 import com.interpss.core.aclf.BaseAclfNetwork;
 import com.interpss.core.aclf.hvdc.ACControlMode;
 import com.interpss.core.aclf.hvdc.BaseVSCConverter;
@@ -33,7 +31,6 @@ import com.interpss.core.aclf.hvdc.HvdcLine2TVSC;
 import com.interpss.core.aclf.hvdc.HvdcOperationMode;
 import com.interpss.core.aclf.hvdc.Inverter;
 import com.interpss.core.aclf.hvdc.Rectifier;
-import com.interpss.core.aclf.hvdc.VSCConverter;
 import com.interpss.core.aclf.hvdc.impl.HvdcLineFactoryImpl;
 
 
@@ -199,7 +196,7 @@ public class AclfHvdcDataHelper {
 	}
 	
 	
-	private void setRectifierData(Rectifier rectifier,ConverterXmlType rectifierXml,int n){
+	private void setRectifierData(Rectifier rectifier, ThyristorConverterXmlType rectifierXml,int n){
 		
 		
 		//TODO interface bus id
@@ -253,7 +250,7 @@ public class AclfHvdcDataHelper {
 			
 	}
 	
-    private void setInverterData(Inverter inverter,ConverterXmlType inverterXml,int n){
+    private void setInverterData(Inverter inverter, ThyristorConverterXmlType inverterXml,int n){
 	
     	
     	//Num of bridges
