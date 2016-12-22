@@ -34,7 +34,6 @@ import org.interpss.dstab.control.gov.simple.SimpleGovernorData;
 
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
-import com.interpss.dstab.BaseDStabBus;
 import com.interpss.dstab.DStabBus;
 import com.interpss.dstab.controller.AnnotateStabilizer;
 import com.interpss.dstab.controller.annotate.AnController;
@@ -107,7 +106,7 @@ public class SimpleStabilizer extends AnnotateStabilizer {
 	 *  @param msg the SessionMsg object
 	 */
 	@Override
-	public boolean initStates(BaseDStabBus<?,?> abus, Machine mach) {
+	public boolean initStates(DStabBus abus, Machine mach) {
     	// init the controller parameters using the data defined in the 
     	// data object		
         this.k1 = getData().getKs();

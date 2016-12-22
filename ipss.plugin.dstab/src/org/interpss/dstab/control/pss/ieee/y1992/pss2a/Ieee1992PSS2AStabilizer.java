@@ -32,7 +32,6 @@ import org.interpss.dstab.control.cml.block.FilterControlBlock;
 import org.interpss.dstab.control.cml.block.FilterNthOrderBlock;
 import org.interpss.dstab.control.cml.block.WashoutControlBlock;
 
-import com.interpss.dstab.BaseDStabBus;
 import com.interpss.dstab.DStabBus;
 import com.interpss.dstab.controller.AnnotateStabilizer;
 import com.interpss.dstab.controller.annotate.AbstractChildAnnotateController;
@@ -171,7 +170,7 @@ public class Ieee1992PSS2AStabilizer extends AnnotateStabilizer {
 	 *  @param msg the SessionMsg object
 	 */
 	@Override
-	public boolean initStates(BaseDStabBus<?,?> abus, Machine mach) {
+	public boolean initStates(DStabBus abus, Machine mach) {
         this.ks1 = getData().getKs1();
         this.t1 = getData().getT1();
         this.t2 = getData().getT2();

@@ -11,17 +11,17 @@ import org.interpss.util.FileUtil;
 import com.interpss.common.exp.InterpssException;
 import com.interpss.common.util.IpssLogger;
 import com.interpss.core.net.Network;
-import com.interpss.dstab.BaseDStabNetwork;
+import com.interpss.dstab.DStabilityNetwork;
 import com.interpss.dstab.common.IDStabSimuOutputHandler;
 
 public abstract class BaseDStabDslRunner implements IDslRunner {
 	
-	protected BaseDStabNetwork net;
+	protected DStabilityNetwork net;
 	protected DstabRunConfigBean dstabBean;
 
 	@Override
 	public IDslRunner setNetwork(Network<?, ?> net) {
-		this.net = (BaseDStabNetwork) net;
+		this.net = (DStabilityNetwork) net;
 		return this;
 	}
 	

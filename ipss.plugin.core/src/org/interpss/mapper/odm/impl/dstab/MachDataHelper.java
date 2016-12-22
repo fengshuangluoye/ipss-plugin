@@ -45,8 +45,7 @@ import com.interpss.common.exp.InterpssException;
 import com.interpss.common.util.IpssLogger;
 import com.interpss.core.funcImpl.CoreUtilFunc;
 import com.interpss.dstab.DStabBus;
-import com.interpss.dstab.BaseDStabBus;
-import com.interpss.dstab.BaseDStabNetwork;
+import com.interpss.dstab.DStabilityNetwork;
 import com.interpss.dstab.mach.EConstMachine;
 import com.interpss.dstab.mach.Eq1Ed1Machine;
 import com.interpss.dstab.mach.Eq1Machine;
@@ -62,7 +61,7 @@ import com.interpss.dstab.mach.SalientPoleMachine;
  *
  */
 public class MachDataHelper {
-	private BaseDStabBus<?,?> dstabBus = null;
+	private DStabBus dstabBus = null;
 	private ApparentPowerXmlType ratedPower = null;
 	VoltageXmlType ratedVoltage = null;
 	
@@ -73,7 +72,7 @@ public class MachDataHelper {
 	 * @param ratedP
 	 * @param ratedV
 	 */
-	public MachDataHelper(BaseDStabBus<?,?> dstabBus, ApparentPowerXmlType ratedP,	VoltageXmlType ratedV) {
+	public MachDataHelper(DStabBus dstabBus, ApparentPowerXmlType ratedP,	VoltageXmlType ratedV) {
 		this.dstabBus = dstabBus;
 		this.ratedPower = ratedP;
 		this.ratedVoltage = ratedV;
@@ -94,7 +93,7 @@ public class MachDataHelper {
 			// create a machine and connect to the bus 
 			RoundRotorMachine mach = (RoundRotorMachine)DStabObjectFactory.
 								createMachine(machId, machXml.getName(), MachineType.EQ11_ED11_ROUND_ROTOR, 
-								(BaseDStabNetwork)this.dstabBus.getNetwork(), dstabBus.getId(), genId);
+								(DStabilityNetwork)this.dstabBus.getNetwork(), dstabBus.getId(), genId);
 			setEq11Ed11Data(mach, machXml);
 			return mach;
 		}
@@ -103,7 +102,7 @@ public class MachDataHelper {
 			// create a machine and connect to the bus
 			SalientPoleMachine mach = (SalientPoleMachine)DStabObjectFactory.
 								createMachine(machId, machXml.getName(), MachineType.EQ11_SALIENT_POLE, 
-								(BaseDStabNetwork)this.dstabBus.getNetwork(), dstabBus.getId(), genId);
+								(DStabilityNetwork)this.dstabBus.getNetwork(), dstabBus.getId(), genId);
 			setEq11Data(mach, machXml);
 			return mach;
 		}
@@ -112,7 +111,7 @@ public class MachDataHelper {
 			// create a machine and connect to the bus
 			Eq1Ed1Machine mach = (Eq1Ed1Machine)DStabObjectFactory.
 								createMachine(machId, machXml.getName(), MachineType.EQ1_ED1_MODEL, 
-								(BaseDStabNetwork)this.dstabBus.getNetwork(), dstabBus.getId(), genId);
+								(DStabilityNetwork)this.dstabBus.getNetwork(), dstabBus.getId(), genId);
 			setEq1Ed1Data(mach, machXml);
 			return mach;
 		}
@@ -121,7 +120,7 @@ public class MachDataHelper {
 			// create a machine and connect to the bus
 			Eq1Machine mach = (Eq1Machine)DStabObjectFactory.
 								createMachine(machId, machXml.getName(), MachineType.EQ1_MODEL, 
-								(BaseDStabNetwork)this.dstabBus.getNetwork(), dstabBus.getId(), genId);
+								(DStabilityNetwork)this.dstabBus.getNetwork(), dstabBus.getId(), genId);
 			setEq1Data(mach, machXml);
 			return mach;
 		}
@@ -130,7 +129,7 @@ public class MachDataHelper {
 			// create a machine and connect to the bus
 			EConstMachine mach = (EConstMachine)DStabObjectFactory.
 								createMachine(machId, machXml.getName(), MachineType.ECONSTANT, 
-								(BaseDStabNetwork)this.dstabBus.getNetwork(), dstabBus.getId(), genId);
+								(DStabilityNetwork)this.dstabBus.getNetwork(), dstabBus.getId(), genId);
 			setClassicData(mach, machXml);
 			return mach;
 		}
@@ -139,7 +138,7 @@ public class MachDataHelper {
 			Complex z1 = calSourceZ1(machXml);
 			Complex z0 = calSourceZ0(machXml, z1);
 			return DStabObjectFactory.createInfiniteMachine(machId, machXml.getName(), 
-					z1, z0, (BaseDStabNetwork)this.dstabBus.getNetwork(), this.dstabBus.getId(), genId);
+					z1, z0, (DStabilityNetwork)this.dstabBus.getNetwork(), this.dstabBus.getId(), genId);
 		}
 		
 		throw new InterpssException("Error : Wrong mach model type, bus id: " + this.dstabBus.getId());

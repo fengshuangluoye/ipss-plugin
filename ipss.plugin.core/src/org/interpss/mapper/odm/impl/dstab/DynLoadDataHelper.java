@@ -3,26 +3,26 @@ package org.interpss.mapper.odm.impl.dstab;
 import org.ieee.odm.schema.DynamicLoadCMPLDWXmlType;
 import org.interpss.dstab.load.DynLoadCMPLDW;
 
-import com.interpss.dstab.BaseDStabBus;
-import com.interpss.dstab.BaseDStabNetwork;
+import com.interpss.dstab.DStabBus;
+import com.interpss.dstab.DStabilityNetwork;
 
 public class DynLoadDataHelper {
 	
-	private BaseDStabBus bus = null;
-	private BaseDStabNetwork dynNet = null;
+	private DStabBus bus = null;
+	private DStabilityNetwork dynNet = null;
 	
 	public DynLoadDataHelper() {
 	
 	}
 	
 	
-	public DynLoadDataHelper(BaseDStabNetwork dstabNet, BaseDStabBus dstabBus) {
+	public DynLoadDataHelper(DStabilityNetwork dstabNet, DStabBus dstabBus) {
 		this.dynNet = dstabNet;
 		this.bus= dstabBus; 
 	}
 	
 	
-	public DynLoadCMPLDW createCMPLDWLoadModel(DynamicLoadCMPLDWXmlType cmpldw, BaseDStabBus dstabBus, String loadId){
+	public DynLoadCMPLDW createCMPLDWLoadModel(DynamicLoadCMPLDWXmlType cmpldw, DStabBus dstabBus, String loadId){
 		
 		//TODO
 		return null;
