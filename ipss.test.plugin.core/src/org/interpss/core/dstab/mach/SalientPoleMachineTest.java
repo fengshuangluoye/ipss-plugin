@@ -29,8 +29,13 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.interpss.common.exp.InterpssException;
+<<<<<<< HEAD
 import com.interpss.dstab.DStabBus;
 import com.interpss.dstab.DStabilityNetwork;
+=======
+import com.interpss.dstab.BaseDStabBus;
+import com.interpss.dstab.BaseDStabNetwork;
+>>>>>>> refs/heads/3Phase_model
 import com.interpss.dstab.algo.DynamicSimuMethod;
 import com.interpss.dstab.mach.SalientPoleMachine;
 import com.interpss.dstab.util.sample.SampleDStabCase;
@@ -40,11 +45,15 @@ public class SalientPoleMachineTest extends TestSetupBase {
 	@Test
 	public void test_Case1()  throws InterpssException {
 		// create a machine in a two-bus network. The loadflow already converged
+<<<<<<< HEAD
 		DStabilityNetwork net = SampleDStabCase.createDStabTestNet();
+=======
+		BaseDStabNetwork<?,?> net = SampleDStabCase.createDStabTestNet();
+>>>>>>> refs/heads/3Phase_model
 		SalientPoleMachine mach = SampleDStabCase.createSalientPoleMachine(net);
 		
 		// calculate mach state init values
-		DStabBus bus = net.getDStabBus("Gen");
+		BaseDStabBus<?,?> bus = net.getDStabBus("Gen");
 		mach.initStates(bus);
 		//System.out.println("Ygen: " + mach.getYgen());
 		//System.out.println("Igen: " + mach.getIgen());

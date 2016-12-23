@@ -62,7 +62,11 @@ public class TestSubnetworkProcessor {
 	    System.out.println("net size ="+dsNet.getBusList().size());
 	    assertTrue(dsNet.getBusList().size()==9); 
 	    
+<<<<<<< HEAD
 	    List<DStabilityNetwork> subNetList = proc.getSubNetworkList();
+=======
+	    List<BaseDStabNetwork<?,?>> subNetList = proc.getSubNetworkList();
+>>>>>>> refs/heads/3Phase_model
 	    assertTrue(subNetList.size()==2);
 	    System.out.println("Sub network -1");
 	    for(Bus b:subNetList.get(0).getBusList() ){
@@ -137,7 +141,11 @@ public class TestSubnetworkProcessor {
 	    assertTrue(dsNet.getBusList().size() == 10);   
 	    
 	    
+<<<<<<< HEAD
 	    List<DStabilityNetwork> subNetList = proc.getSubNetworkList();
+=======
+	    List<BaseDStabNetwork<?,?>> subNetList = proc.getSubNetworkList();
+>>>>>>> refs/heads/3Phase_model
 	    assertTrue(subNetList.size()==2);
 	    System.out.println("Sub network:"+subNetList.get(0).getId());
 	    
